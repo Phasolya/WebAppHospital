@@ -1,0 +1,80 @@
+
+body {
+    background: white; /* цвет фона */
+    margin: 0; /* внешний отступ */
+    padding: 0px; /* внутренний отступ */
+    font-family: Tahoma; /* шрифт */
+    line-height: 1.5; /* расстояние между строками */
+}
+
+/*.title { !* имя класса стилизации *!*/
+/*    font-size: 45px; !* размер шрифта *!*/
+/*    color: green; !* цвет шрифта *!*/
+/*}*/
+
+/*.card {*/
+/*    width: 400px; !* ширина нашего блока стилизации *!*/
+/*    height: 400px; !* высота нашего блока стилизации *!*/
+/*    margin: 0 auto; !* внешний отступ (первая цифра - верх/низ) *!*/
+/*    padding: 20px; !* внутренний отступ *!*/
+/*    box-shadow: 0 5px 10px; !* тень для нашей коробки (ось х, у и размытость) *!*/
+/*    border-radius: 100px; !* сглаживание углов коробки *!*/
+/*    text-align: center; !* позиция текста в элементе *!*/
+/*}*/
+
+
+.header {
+    display: flex; /* включили параметр флекс */
+    justify-content: space-between; /* выравнивание компонентов вдоль главной оси */
+    padding: 10px; /* внутренний отступ */
+    background: #76cdd8; /* цвет фона */
+    color: white; /* цвет шрифта */
+    font-family: Tahoma; /* шрифт */
+}
+
+.header_section {
+    display: flex; /* включили параметр флекс */
+    align-items: center; /* расположение компонентов по центру */
+}
+.header_item{
+    padding: 10px 15px;
+    font-size: 20px;
+    margin-left: 5px;
+}
+.header_logo{
+    padding: 10px 15px;
+    font-size: 20px;
+    margin-left: 5px;
+    background: url("/logo60x60.jpg");
+}
+/*.header_item:hover{*/
+/*    background-color: cadetblue;*/
+/*    border-radius: 4px;*/
+/*}*/
+
+.split_screen{
+    display: flex; /* включили параметр флекс */
+    justify-content: space-between; /* выравнивание компонентов вдоль главной оси */
+    padding: 10px; /* внутренний отступ */
+}
+
+.body_section{
+    box-shadow: 5px 5px 10px;
+    display: flex; /* включили параметр флекс */
+    justify-content: space-between; /* выравнивание компонентов вдоль главной оси */
+    padding: 10px; /* внутренний отступ */
+}
+
+.simple_body_section{
+    box-shadow: 5px 5px 10px;
+    /*display: flex; !* включили параметр флекс *!*/
+    justify-content: normal; /* выравнивание компонентов вдоль главной оси */
+    padding: 10px; /* внутренний отступ */
+}
+
+.error{
+    color: red; /* цвет шрифта */
+}
+.success{
+    color: green; /* цвет шрифта */
+}
