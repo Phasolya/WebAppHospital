@@ -15,6 +15,11 @@ import java.io.IOException;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code LoginCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for user login.
+ *
+ */
 public class LoginCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(LoginCommand.class);
@@ -28,25 +33,28 @@ public class LoginCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        LOGGER.debug("Command LoginCommand starts");
+
+        final String lang = getLang(request);
 
         HttpSession session = request.getSession();
 
         String email = request.getParameter(EMAIL);
         String password = request.getParameter(PASSWORD);
 
-        String message = null;
+        String message;
 
         if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
-            message = localize(EMPTY_LOGIN_PASSWORD, LANG);
+            message = localize(EMPTY_LOGIN_PASSWORD, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         User user = SERVICE.validateUser(email, password);
+        LOGGER.info("get user from db");
 
         if (user == null) {
-            message = localize(CANT_FIND_USER_BY_LOGIN_PASSWORD, LANG);
+            message = localize(CANT_FIND_USER_BY_LOGIN_PASSWORD, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
@@ -56,8 +64,10 @@ public class LoginCommand implements Command {
         session.setAttribute(USER, user);
         session.setAttribute(USER_ROLE, userRole);
 
-        message = localize(WELCOME, LANG) + " " + localize(userRole.getName(), LANG);
+        message = localize(WELCOME, lang) + " " + localize(userRole.getName(), lang);
         request.setAttribute(MESSAGE, message);
+
+        LOGGER.debug("Command LoginCommand starts");
         return CONFIRM_PAGE;
 
     }

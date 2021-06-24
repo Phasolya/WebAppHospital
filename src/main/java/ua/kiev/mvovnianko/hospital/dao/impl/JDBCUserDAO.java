@@ -1,5 +1,6 @@
 package ua.kiev.mvovnianko.hospital.dao.impl;
 
+import ua.kiev.mvovnianko.hospital.dao.CommonsOperable;
 import ua.kiev.mvovnianko.hospital.dao.UserDAO;
 import ua.kiev.mvovnianko.hospital.dbConnector.MySQLConnectorManager;
 import ua.kiev.mvovnianko.hospital.entity.User;
@@ -12,7 +13,7 @@ import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
  * The {@code JDBCUserDao} class is a JDBC implementation
  * of {@code UserDAO} interface
  */
-public class JDBCUserDAO implements UserDAO {
+public class JDBCUserDAO implements UserDAO, CommonsOperable {
 
     /**
      * Responsible for getting the ResultSet with all the data of specified User from DB.
@@ -176,5 +177,58 @@ public class JDBCUserDAO implements UserDAO {
         statement.setString(1, doctorType);
 
         return statement.executeQuery();
+    }
+
+    @Override
+    public ResultSet countPatientsByDoctorId(PreparedStatement statement, int doctorId) throws SQLException {
+
+        statement.setInt(1, doctorId);
+
+        return statement.executeQuery();
+    }
+
+    @Override
+    public ResultSet getPatients(PreparedStatement statement, int doctorId, int startRow, int amount) throws SQLException {
+
+        statement.setInt(1, doctorId);
+        statement.setInt(2, startRow);
+        statement.setInt(3, amount);
+
+        return statement.executeQuery();
+    }
+
+    @Override
+    public ResultSet getEntityDoctorsPage(PreparedStatement statement, int startRow, int amount) throws SQLException {
+
+        statement.setInt(1, startRow);
+        statement.setInt(2, amount);
+
+        return statement.executeQuery();
+    }
+
+    @Override
+    public int countUsersByRoleId(int id) throws SQLException {
+
+        int rowsCount;
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL__COUNT_USERS_BY_ID)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+            statement.setInt(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next())
+                rowsCount = resultSet.getInt(MYSQL_COUNT);
+            else throw new SQLException();
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+        }
+
+        return rowsCount;
+
     }
 }

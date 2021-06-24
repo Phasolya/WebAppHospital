@@ -19,6 +19,11 @@ import java.time.LocalDate;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code UserRegistrationCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for register new user.
+ *
+ */
 public class UserRegistrationCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(GetDoctorsCommand.class);
@@ -32,72 +37,64 @@ public class UserRegistrationCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        final String lang = getLang(request);
 
         HttpSession session = request.getSession();
 
-        String message = localize(USER_REGISTRATION_COMPLETE, LANG);
+        String message = localize(USER_REGISTRATION_COMPLETE, lang);
         User user;
 
         try {
 
             user = validationData(request);
-
+            LOGGER.info("User data validated");
             SERVICE.createNewUser(user);
-
+            LOGGER.info("User added to db");
 
             if (user.getUserRole() == UserRole.DOCTOR){
 
-                String doctorType = request.getParameter("doctorType");
+                String doctorType = request.getParameter(JSP_DOCTOR_TYPE);
                 SERVICE.setDoctorType(user.getId(), doctorType);
+                LOGGER.info("DoctorType added to db");
 
             }
-
-
         } catch (ValidationDateException ex) {
-
-            message = localize(ex.getMessage(), LANG);
-            request.setAttribute("message", message);
+            LOGGER.error("new user add to db error");
+            message = localize(ex.getMessage(), lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
 
         } catch (SQLException ex) {
-
+            LOGGER.error("User data not validated");
             message = ex.getMessage();
-            request.setAttribute("message", message);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
-
         }
 
-        request.setAttribute("message", message);
+        request.setAttribute(MESSAGE, message);
         return CONFIRM_PAGE;
     }
 
     private User validationData(HttpServletRequest request) throws ValidationDateException {
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String fullName = request.getParameter("fullName");
-        String birthDate = request.getParameter("birthDate");
-        String userRoleStr = request.getParameter("userRole");
-        String doctorTypeStr = request.getParameter("doctorType");
+        String email = request.getParameter(EMAIL);
+        String password = request.getParameter(PASSWORD);
+        String fullName = request.getParameter(FULL_NAME);
+        String birthDate = request.getParameter(BIRTH_DATE);
+        String userRoleStr = request.getParameter(USER_ROLE);
+        String doctorTypeStr = request.getParameter(DOCTOR_TYPE);
 
         if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
             throw new ValidationDateException(EMPTY_LOGIN_PASSWORD);
         }
         if (!(email.matches(REGEX_EMAIL) || password.matches(REGEX_PASSWORD))) {
-
             throw new ValidationDateException(REGISTRATION_LOGIN_PASSWORD_ERROR);
         }
-
         if (fullName == null || fullName.isEmpty()) {
-
             throw new ValidationDateException(EMPTY_FULL_NAME);
-
         }
         if (!(fullName.matches(REGEX_FULL_NAME_EN) || fullName.matches(REGEX_FULL_NAME_RU))) {
-
             throw new ValidationDateException(WRONG_FULL_NAME);
-
         }
 
         UserRole userRole;

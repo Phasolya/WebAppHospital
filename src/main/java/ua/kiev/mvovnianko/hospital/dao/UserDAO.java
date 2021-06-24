@@ -59,4 +59,12 @@ public interface UserDAO {
     ResultSet getDoctorTypeByTypeName(PreparedStatement statement, String doctorType) throws SQLException;
 
     ResultSet addDoctorType(PreparedStatement statement, String doctorType) throws SQLException;
+
+    ResultSet countPatientsByDoctorId(PreparedStatement statement, int doctorId) throws SQLException;
+
+    ResultSet getPatients(PreparedStatement statement, int doctorId, int startRow, int amount) throws SQLException;
+
+    ResultSet getEntityDoctorsPage(PreparedStatement statement, int startRow, int amount) throws SQLException;
+
+    int countUsersByRoleId(int id) throws SQLException;
 }

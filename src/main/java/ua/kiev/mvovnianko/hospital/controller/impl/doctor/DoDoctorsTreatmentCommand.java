@@ -14,6 +14,11 @@ import java.sql.SQLException;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code DoDoctorsTreatmentCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for deleting treatments.
+ *
+ */
 public class DoDoctorsTreatmentCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(DoDoctorsTreatmentCommand.class);
@@ -27,7 +32,9 @@ public class DoDoctorsTreatmentCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        LOGGER.debug("Command DoDoctorsTreatment starts");
+
+        final String lang = getLang(request);
 
         String message = TREATMENT_DELETED;
 
@@ -36,15 +43,18 @@ public class DoDoctorsTreatmentCommand implements Command {
         try {
 
             treatmentId = Integer.parseInt(request.getParameter(TREATMENT_ID));
+            LOGGER.info("treatmentId validated");
 
         } catch (NumberFormatException ex) {
-            message = localize(INCORRECT_ID, LANG);
+            LOGGER.error("treatmentId validation error");
+            message = localize(INCORRECT_ID, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         if (treatmentId <= 0) {
-            message = localize(INCORRECT_ID, LANG);
+            LOGGER.error("treatmentId validation error");
+            message = localize(INCORRECT_ID, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
@@ -52,22 +62,26 @@ public class DoDoctorsTreatmentCommand implements Command {
         try {
 
             Treatment treatment = SERVICE.getTreatmentById(treatmentId);
+            LOGGER.info("get treatment from db");
 
             if (treatment == null) {
-                message = localize(TREATMENT_DONT_EXIST, LANG);
+                message = localize(TREATMENT_DONT_EXIST, lang);
                 request.setAttribute(MESSAGE, message);
                 return ERROR_PAGE;
             }
 
             SERVICE.deleteTreatmentById(treatmentId);
+            LOGGER.info("treatment deleted from db");
 
         } catch (SQLException throwable) {
-            message = localize(CANT_DELETE_TREATMENT, LANG);
+            LOGGER.info("treatment delete from db error");
+            message = localize(CANT_DELETE_TREATMENT, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         request.setAttribute(MESSAGE, message);
+        LOGGER.debug("Command DoDoctorsTreatment finished");
         return CONFIRM_PAGE;
     }
 }

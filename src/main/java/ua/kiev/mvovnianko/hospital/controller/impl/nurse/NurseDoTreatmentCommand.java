@@ -16,6 +16,11 @@ import java.sql.SQLException;
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.CONFIRM_PAGE;
 
+/**
+ * The {@code NurseDoTreatmentCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for delete treatments.
+ *
+ */
 public class NurseDoTreatmentCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(NurseDoTreatmentCommand.class);
@@ -29,7 +34,9 @@ public class NurseDoTreatmentCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        LOGGER.debug("Command NurseDoTreatment starts");
+
+        final String lang = getLang(request);
 
         String message = TREATMENT_DELETED;
 
@@ -38,15 +45,17 @@ public class NurseDoTreatmentCommand implements Command {
         try {
 
             treatmentId = Integer.parseInt(request.getParameter(TREATMENT_ID));
+            LOGGER.info("get treatmentId from HttpServletRequest");
 
         } catch (NumberFormatException ex) {
-            message = localize(INCORRECT_ID, LANG);
+            LOGGER.error("treatmentId format error");
+            message = localize(INCORRECT_ID, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         if (treatmentId <= 0) {
-            message = localize(INCORRECT_ID, LANG);
+            message = localize(INCORRECT_ID, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
@@ -54,28 +63,32 @@ public class NurseDoTreatmentCommand implements Command {
         try {
 
             Treatment treatment = SERVICE.getTreatmentById(treatmentId);
+            LOGGER.info("get treatment from db");
 
             if (treatment == null) {
-                message = localize(TREATMENT_DONT_EXIST, LANG);
+                message = localize(TREATMENT_DONT_EXIST, lang);
                 request.setAttribute(MESSAGE, message);
                 return ERROR_PAGE;
             }
 
             if (treatment.getTreatmentType() == TreatmentType.OPERATION) {
-                message = localize(NURSE_CANT_DO_OPERATION, LANG);
+                message = localize(NURSE_CANT_DO_OPERATION, lang);
                 request.setAttribute(MESSAGE, message);
                 return ERROR_PAGE;
             }
 
             SERVICE.deleteTreatmentById(treatmentId);
+            LOGGER.info("delete treatment from db");
 
         } catch (SQLException throwable) {
-            message = localize(CANT_DELETE_TREATMENT, LANG);
+            LOGGER.error("treatment get/delete from db error");
+            message = localize(CANT_DELETE_TREATMENT, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         request.setAttribute(MESSAGE, message);
+        LOGGER.debug("Command NurseDoTreatment finished");
         return CONFIRM_PAGE;
     }
 }

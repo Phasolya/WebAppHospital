@@ -12,6 +12,11 @@ import java.io.IOException;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.GUEST_PAGE;
 
+/**
+ * The {@code LogoutCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for logout.
+ *
+ */
 public class LogoutCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(LogoutCommand.class);
@@ -19,13 +24,13 @@ public class LogoutCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        LOGGER.debug("Command starts");
+        LOGGER.debug("Command logout starts");
 
         HttpSession session = request.getSession(false);
         if (session != null)
             session.invalidate();
 
-        LOGGER.debug("Command finished");
+        LOGGER.debug("Command logout finished");
         return GUEST_PAGE;
 
     }

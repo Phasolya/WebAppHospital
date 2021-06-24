@@ -15,6 +15,11 @@ import java.sql.SQLException;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code DocForPatientCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for setting doctor for patient by specified emails.
+ *
+ */
 public class DocForPatientCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(DocForPatientCommand.class);
@@ -28,26 +33,25 @@ public class DocForPatientCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        final String lang = getLang(request);
 
-        String doctorLogin = request.getParameter("doctorLogin");
-        String patientLogin = request.getParameter("patientLogin");
+        String doctorEmail = request.getParameter(JSP_DOCTOR_EMAIL);
+        String patientEmail = request.getParameter(JSP_PATIENT_EMAIL);
 
-        String message = localize(PATIENT_ADD_FOR_DOC, LANG);
+        String message = localize(PATIENT_ADD_FOR_DOC, lang);
 
-        if (doctorLogin == null || patientLogin == null || doctorLogin.isEmpty() || patientLogin.isEmpty()) {
-            message = localize(EMPTY_LOGIN_ERROR, LANG);
-            request.setAttribute("message", message);
+        if (doctorEmail == null || patientEmail == null || doctorEmail.isEmpty() || patientEmail.isEmpty()) {
+            message = localize(EMPTY_LOGIN_ERROR, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
-        User doctor = SERVICE.getUserByEmail(doctorLogin);
-
-        User patient = SERVICE.getUserByEmail(patientLogin);
+        User doctor = SERVICE.getUserByEmail(doctorEmail);
+        User patient = SERVICE.getUserByEmail(patientEmail);
 
         if (doctor == null || patient == null) {
-            message = localize(CANT_FIND_USER_BY_LOGIN, LANG);
-            request.setAttribute("message", message);
+            message = localize(CANT_FIND_USER_BY_LOGIN, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
@@ -55,22 +59,24 @@ public class DocForPatientCommand implements Command {
         UserRole patientRole = patient.getUserRole();
 
         if (doctorRole != UserRole.DOCTOR || patientRole != UserRole.PATIENT) {
-            message = localize(WRONG_ROLE, LANG);
-            request.setAttribute("message", message);
+            message = localize(WRONG_ROLE, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         try {
 
             SERVICE.setDoctorForPatient(doctor.getId(), patient.getId());
+            LOGGER.info(PATIENT_ADD_FOR_DOC);
 
         } catch (SQLException throwable) {
-            message = localize(DOCTOR_ALREADY_HAVE_PATIENT, LANG);
-            request.setAttribute("message", message);
+            LOGGER.error("set doctor for patient error");
+            message = localize(DOCTOR_ALREADY_HAVE_PATIENT, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
-        request.setAttribute("message", message);
+        request.setAttribute(MESSAGE, message);
         return CONFIRM_PAGE;
     }
 }

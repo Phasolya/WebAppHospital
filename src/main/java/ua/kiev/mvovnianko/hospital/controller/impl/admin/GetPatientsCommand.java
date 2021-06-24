@@ -16,6 +16,10 @@ import java.util.List;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code GetPatientsCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for getting patients list by dozes(pagination) in chosen order.
+ */
 public class GetPatientsCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(GetPatientsCommand.class);
@@ -29,39 +33,53 @@ public class GetPatientsCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        final String lang = getLang(request);
+
+        int page = FIRST_PAGE;
+        int recordsPerPage = RECORDS_PER_PAGE;
+        int noOfPages;
+        if (request.getParameter(PATIENTS_CURRENT_PAGE) != null) {
+            page = Integer.parseInt(request.getParameter(PATIENTS_CURRENT_PAGE));
+        }
 
         List<User> patients;
 
-        String sortBy = request.getParameter("patientsSortBy");
+        String sortBy = request.getParameter(PATIENTS_SORT_PARAMETER);
 
-        String message = null;
+        String message;
 
         if (sortBy == null || sortBy.isEmpty()) {
-            message = localize(EMPTY_SORT_PARAMETER, LANG);
-            request.setAttribute("message", message);
+            message = localize(EMPTY_SORT_PARAMETER, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
-        if (!(sortBy.equals("birth_date") || sortBy.equals("full_name") )) {
-            message = localize(UNKNOWN_SORT_PARAMETER, LANG);
-            request.setAttribute("message", message);
+        if (!(sortBy.equals(MYSQL_USER_BIRT_DATE) || sortBy.equals(MYSQL_USER_FULL_NAME) )) {
+            message = localize(UNKNOWN_SORT_PARAMETER, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         try {
 
-            patients = SERVICE.getSortedUsersByRoleId(UserRole.PATIENT.getId(), sortBy);
+            patients = SERVICE.getSortedUsersPageByRoleId(UserRole.PATIENT.getId(), sortBy, (page - 1) * recordsPerPage, recordsPerPage);
+            LOGGER.info("patients page reads from db");
+            int noOfRecords = SERVICE.countUsersByRoleId(UserRole.PATIENT.getId());
+            LOGGER.info("get from db patients amount");
+            noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
 
         } catch (SQLException throwable) {
-            message = localize(SOMETHING_WENT_WRONG, LANG);
-            request.setAttribute("message", message);
+            LOGGER.error("patients page can't be read from db");
+            message = localize(SOMETHING_WENT_WRONG, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
-
-        String attributeSortBy = localize("by", LANG) + " " + localize(sortBy, LANG);
-        request.setAttribute("patientsSortBy", attributeSortBy);
-        request.setAttribute("patients", patients);
+        String attributeSortBy = localize(sortBy, lang);
+        request.setAttribute(PATIENTS_SORT_PARAMETER, attributeSortBy);
+        request.setAttribute("patientsPageSortBy", sortBy);
+        request.setAttribute( PATIENTS, patients);
+        request.setAttribute(PATIENTS_NUMBER_OF_PAGES, noOfPages);
+        request.setAttribute(PATIENTS_CURRENT_PAGE, page);
         return ADMIN_PAGE;
     }
 }

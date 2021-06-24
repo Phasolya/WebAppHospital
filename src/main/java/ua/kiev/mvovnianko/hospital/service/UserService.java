@@ -58,4 +58,16 @@ public interface UserService {
     void setDoctorType(int doctorId, String doctorType) throws SQLException;
 
     List<User> getSortedPatientsByDoctorId(int DoctorId, String sortBy) throws SQLException;
+
+    int countPatientsByDoctorId(int DoctorId) throws SQLException;
+
+    List<User> getPatientsPageByDoctorId(int id, String sortBy, int i, int recordsPerPage);
+
+    List<EntityDoctor> getDoctorsPage(String doctorType, String sortParameter, int startRow, int amount) throws SQLException;
+
+    int countDoctors() throws SQLException;
+
+    List<User> getSortedUsersPageByRoleId(int roleId, String sortParameter, int startRow, int amount) throws SQLException;
+
+    int countUsersByRoleId(int id) throws SQLException;
 }

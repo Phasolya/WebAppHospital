@@ -15,6 +15,10 @@ import java.util.List;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code GetDoctorsCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for getting doctors list by dozes(pagination) in chosen order.
+ */
 public class GetDoctorsCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(GetDoctorsCommand.class);
@@ -28,39 +32,53 @@ public class GetDoctorsCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        final String lang = getLang(request);
+
+        int page = FIRST_PAGE;
+        int recordsPerPage = RECORDS_PER_PAGE;
+        int noOfPages;
+        if (request.getParameter(DOCTORS_CURRENT_PAGE) != null) {
+            page = Integer.parseInt(request.getParameter(DOCTORS_CURRENT_PAGE));
+        }
 
         List<EntityDoctor> doctors;
 
-        String docSortBy = request.getParameter("doctorsSortBy");
+        String sortBy = request.getParameter(DOCTORS_SORT_PARAMETER);
 
-        String message = null;
+        String message;
 
-        if (docSortBy == null || docSortBy.isEmpty()) {
-            message = localize(EMPTY_SORT_PARAMETER, LANG);
-            request.setAttribute("message", message);
+        if (sortBy == null || sortBy.isEmpty()) {
+            message = localize(EMPTY_SORT_PARAMETER, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
-        if (!(docSortBy.equals("full_name") || docSortBy.equals("doctor_type") || docSortBy.equals("patients_amount"))) {
-            message = localize(UNKNOWN_SORT_PARAMETER, LANG);
-            request.setAttribute("message", message);
+        if (!(sortBy.equals(MYSQL_USER_FULL_NAME) || sortBy.equals(MYSQL_DOCTOR_TYPE) || sortBy.equals(MYSQL_PATIENTS_AMOUNT))) {
+            message = localize(UNKNOWN_SORT_PARAMETER, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         try {
 
-            doctors = SERVICE.getSortedDoctors("all", docSortBy);
+            doctors = SERVICE.getDoctorsPage(ALL, sortBy, (page - 1) * recordsPerPage, recordsPerPage);
+            LOGGER.info("doctors page reads from db");
+            int noOfRecords = SERVICE.countDoctors();
+            LOGGER.info("get from db doctors amount");
+            noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
 
         } catch (SQLException throwable) {
-            message = localize(SOMETHING_WENT_WRONG, LANG);
-            request.setAttribute("message", message);
+            LOGGER.error("doctors page can't be read from db");
+            message = localize(SOMETHING_WENT_WRONG, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
-
-        String attributeSortBy = localize("by", LANG) + " " + localize(docSortBy, LANG);
-        request.setAttribute("doctorsSortBy", attributeSortBy);
-        request.setAttribute("doctors", doctors);
+        String attributeSortBy = localize(sortBy, lang);
+        request.setAttribute(DOCTORS_SORT_PARAMETER, attributeSortBy);
+        request.setAttribute("doctorsPageSortBy", sortBy);
+        request.setAttribute(JSP_DOCTORS, doctors);
+        request.setAttribute(JSP_DOCTORS_NO_OF_PAGES, noOfPages);
+        request.setAttribute(DOCTORS_CURRENT_PAGE, page);
         return ADMIN_PAGE;
     }
 }

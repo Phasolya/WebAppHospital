@@ -15,6 +15,11 @@ import java.util.List;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code NurseGetTreatmentsCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for getting treatments list by dozes(pagination) in chosen order.
+ *
+ */
 public class NurseGetTreatmentsCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(NurseGetTreatmentsCommand.class);
@@ -28,10 +33,12 @@ public class NurseGetTreatmentsCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        LOGGER.debug("Command GetMyTreatments starts");
 
-        int page = 1;
-        int recordsPerPage = 5;
+        final String lang = getLang(request);
+
+        int page = FIRST_PAGE;
+        int recordsPerPage = RECORDS_PER_PAGE;
         int noOfPages;
         if (request.getParameter(PAGE) != null) {
             page = Integer.parseInt(request.getParameter(PAGE));
@@ -41,16 +48,16 @@ public class NurseGetTreatmentsCommand implements Command {
 
         String sortBy = request.getParameter(TREATMENTS_SORT_PARAMETER);
 
-        String message = null;
+        String message;
 
         if (sortBy == null || sortBy.isEmpty()) {
-            message = localize(EMPTY_SORT_PARAMETER, LANG);
+            message = localize(EMPTY_SORT_PARAMETER, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         if (!(sortBy.equals("patients_login") || sortBy.equals("disease_name") || sortBy.equals("treatment_type_name"))) {
-            message = localize(UNKNOWN_SORT_PARAMETER, LANG);
+            message = localize(UNKNOWN_SORT_PARAMETER, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
@@ -58,21 +65,25 @@ public class NurseGetTreatmentsCommand implements Command {
         try {
 
             treatments = SERVICE.getTreatmentsPage(sortBy, (page - 1) * recordsPerPage, recordsPerPage);
+            LOGGER.info("treatments list get downloaded from db");
             int noOfRecords = SERVICE.countTreatments();
+            LOGGER.info("treatments amount downloaded from db");
             noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
 
         } catch (SQLException throwable) {
-            message = localize(SOMETHING_WENT_WRONG, LANG);
+            LOGGER.error("treatments downloaded error");
+            message = localize(SOMETHING_WENT_WRONG, lang);
             request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
-
-        String attributeSortBy = localize(sortBy, LANG);
+        String attributeSortBy = localize(sortBy, lang);
         request.setAttribute(TREATMENTS_SORT_PARAMETER, attributeSortBy);
-        request.setAttribute("pageSortBy", sortBy);
-        request.setAttribute("treatments", treatments);
-        request.setAttribute("noOfPages", noOfPages);
-        request.setAttribute("currentPage", page);
+        request.setAttribute("treatmentsPageSortBy", sortBy);
+        request.setAttribute(JSP_TREATMENTS, treatments);
+        request.setAttribute(TREATMENTS_NO_OF_PAGES, noOfPages);
+        request.setAttribute(TREATMENTS_CURRENT_PAGE, page);
+
+        LOGGER.debug("Command GetMyTreatments finished");
         return NURSE_PAGE;
     }
 }

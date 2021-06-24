@@ -130,9 +130,71 @@ public class MySQLDiseaseService implements DiseaseService {
 
         } catch (SQLException e) {
 
-            LOGGER.error(COULD_NOT_LOAD_TREATMENTS);
+            LOGGER.error(COULD_NOT_LOAD_DISEASE);
         }
         return diseases;
+    }
+
+    @Override
+    public List<Disease> getDiseasesPage(String sortBy, int doctorId, int startRow, int amount) throws SQLException {
+
+        List<Disease> diseases = new ArrayList<>();
+
+        String sqlRequest = String.format(SQL_GET_SORTED_DISEASES_BY_DOCTOR_ID, sortBy);
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = DISEASE_DAO.getDiseasesPage(statement, doctorId, startRow, amount);
+
+            while (resultSet.next()) {
+
+                Disease disease = getDiseaseFromResultSet(resultSet);
+
+                diseases.add(disease);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_DISEASE);
+        }
+        return diseases;
+    }
+
+    @Override
+    public int countDiseasesByDoctorId(int doctorId) throws SQLException {
+
+        int count = 0;
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_DISEASES_BY_DOCTOR_ID)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = DISEASE_DAO.countDiseasesByDoctorId(statement, doctorId);
+
+            if (resultSet.next()) {
+
+                count = resultSet.getInt(MYSQL_COUNT);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_DISEASE);
+        }
+        return count;
     }
 
     private Disease getDiseaseFromResultSet(ResultSet resultSet) throws SQLException {

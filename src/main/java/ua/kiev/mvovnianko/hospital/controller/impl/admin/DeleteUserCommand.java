@@ -14,13 +14,16 @@ import java.sql.SQLException;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code DeleteUserCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for deleting user with specified email.
+ *
+ */
 public class DeleteUserCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(DeleteUserCommand.class);
 
     private final UserService SERVICE;
-
-
 
     public DeleteUserCommand(UserService userService) {
         SERVICE = userService;
@@ -29,37 +32,39 @@ public class DeleteUserCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String LANG = getLang(request);
+        final String lang = getLang(request);
 
-        String email = request.getParameter("userEmail");
+        String email = request.getParameter(EMAIL);
 
-        String message = localize(USER_DELETED, LANG);
+        String message = localize(USER_DELETED, lang);
 
         if (email == null || email.isEmpty()) {
-            message = localize(EMPTY_EMAIL, LANG);
-            request.setAttribute("message", message);
+            message = localize(EMPTY_EMAIL, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         User user = SERVICE.getUserByEmail(email);
 
         if (user == null) {
-            message = localize(CANT_FIND_USER_BY_LOGIN, LANG);
-            request.setAttribute("message", message);
+            message = localize(CANT_FIND_USER_BY_LOGIN, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
         try {
 
             SERVICE.deleteUserByEmail(user.getEmail());
+            LOGGER.info(USER + DELETED);
 
         } catch (SQLException throwable) {
-            message = localize(CANT_DELETE_USER, LANG);
-            request.setAttribute("message", message);
+            LOGGER.error("User delete error");
+            message = localize(CANT_DELETE_USER, lang);
+            request.setAttribute(MESSAGE, message);
             return ERROR_PAGE;
         }
 
-        request.setAttribute("message", message);
+        request.setAttribute(MESSAGE, message);
         return CONFIRM_PAGE;
     }
 }

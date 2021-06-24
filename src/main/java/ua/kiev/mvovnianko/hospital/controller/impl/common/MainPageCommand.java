@@ -14,6 +14,11 @@ import java.util.HashMap;
 
 import static ua.kiev.mvovnianko.hospital.utils.UtilConstants.*;
 
+/**
+ * The {@code MainPageCommand} class is an implementation of
+ * {@code Command} interface, that is responsible for getting main page according to userRole.
+ *
+ */
 public class MainPageCommand implements Command {
 
     private static final Logger LOGGER = LogManager.getLogger(MainPageCommand.class);
@@ -36,11 +41,15 @@ public class MainPageCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
+        LOGGER.debug("Command mainPage starts");
+
         HttpSession session = request.getSession();
 
-        UserRole userRole = (UserRole)request.getSession().getAttribute("userRole");
+        UserRole userRole = (UserRole)request.getSession().getAttribute(USER_ROLE);
 
         String forward = PAGES.getOrDefault(userRole, GUEST_PAGE);
+
+        LOGGER.debug("Command mainPage finish");
 
         return forward;
     }

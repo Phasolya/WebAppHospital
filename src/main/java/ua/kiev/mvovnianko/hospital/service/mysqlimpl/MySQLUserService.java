@@ -220,7 +220,7 @@ public class MySQLUserService implements UserService {
 
             ResultSet resultSet = USER_DAO.getUserByEmail(statement, email);
 
-            if (resultSet.next()){
+            if (resultSet.next()) {
 
                 user = getUserFromResultSet(resultSet);
 
@@ -260,39 +260,6 @@ public class MySQLUserService implements UserService {
 
         USER_DAO.setTypeForDoctor(doctorId, typeId);
 
-    }
-
-    @Override
-    public List<User> getSortedPatientsByDoctorId(int doctorId, String sortBy) throws SQLException {
-
-        List<User> users = new ArrayList<>();
-        // sortParameter === birth_date OR full_name
-        String sqlRequest = String.format(SQL__FIND_AND_SORT_PATIENTS_BY_DOCTOR_ID, sortBy);
-
-        try (Connection connection = MySQLConnectorManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
-
-            MySQLConnectorManager.startTransaction(connection);
-
-            ResultSet resultSet = USER_DAO.getUsersByRoleId(statement, doctorId);
-
-            while (resultSet.next()) {
-
-                User user = getUserFromResultSet(resultSet);
-
-                users.add(user);
-
-            }
-
-            MySQLConnectorManager.commitTransaction(connection);
-
-            resultSet.close();
-
-        } catch (SQLException e) {
-
-            LOGGER.error(COULD_NOT_LOAD_USERS);
-        }
-        return users;
     }
 
     private Integer getDoctorTypeIdByTypeName(String doctorType) {
@@ -368,4 +335,184 @@ public class MySQLUserService implements UserService {
 
         return typeId;
     }
+
+    @Override
+    public int countPatientsByDoctorId(int doctorId) throws SQLException {
+
+        int count = 0;
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_PATIENTS_BY_DOCTOR_ID)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.countPatientsByDoctorId(statement, doctorId);
+
+            if (resultSet.next()) {
+
+                count = resultSet.getInt(MYSQL_COUNT);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_USERS);
+        }
+        return count;
+    }
+
+    @Override
+    public List<User> getSortedPatientsByDoctorId(int doctorId, String sortBy) throws SQLException {
+
+        List<User> users = new ArrayList<>();
+        // sortParameter === birth_date OR full_name
+        String sqlRequest = String.format(SQL__FIND_AND_SORT_PATIENTS_BY_DOCTOR_ID, sortBy);
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.getUsersByRoleId(statement, doctorId);
+
+            while (resultSet.next()) {
+
+                User user = getUserFromResultSet(resultSet);
+
+                users.add(user);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_USERS);
+        }
+        return users;
+    }
+
+    @Override
+    public List<User> getPatientsPageByDoctorId(int doctorId, String sortBy, int startRow, int amount) {
+
+        List<User> users = new ArrayList<>();
+
+        String sqlRequest = String.format(SQL__PAGE_OF_SORTED_PATIENTS_BY_DOCTOR_ID, sortBy);
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.getPatients(statement, doctorId, startRow, amount);
+
+            while (resultSet.next()) {
+
+                User user = getUserFromResultSet(resultSet);
+
+                users.add(user);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_USERS);
+        }
+        return users;
+    }
+
+    @Override
+    public List<EntityDoctor> getDoctorsPage(String doctorType, String sortParameter, int startRow, int amount) throws SQLException {
+
+        List<EntityDoctor> doctors = new ArrayList<>();
+        // sortParameter === full_name OR doctor_type OR patients_amount
+        String sqlRequest = String.format(SQL__FIND_AND_SORT_ALL_DOCTORS_PAGE, sortParameter);
+
+        if (!doctorType.equals("all")) {
+            sqlRequest = String.format(SQL__FIND_AND_SORT_DOCTORS_BY_TYPE_PAGE, doctorType, sortParameter);
+        }
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.getEntityDoctorsPage(statement, startRow, amount);
+
+            while (resultSet.next()) {
+
+                EntityDoctor doctor = getDoctorFromResultSet(resultSet);
+
+                doctors.add(doctor);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_DOCTORS);
+        }
+        return doctors;
+    }
+
+    @Override
+    public int countDoctors() throws SQLException {
+
+        return USER_DAO.countUsersByRoleId(UserRole.DOCTOR.getId());
+
+    }
+
+    @Override
+    public List<User> getSortedUsersPageByRoleId(int roleId, String sortParameter, int startRow, int amount) throws SQLException {
+
+        List<User> users = new ArrayList<>();
+
+        String sqlRequest = String.format(SQL__PAGE_OF_SORTED_USERS_BY_ROLE_ID, sortParameter);
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.getPatients(statement, roleId, startRow, amount);
+
+            while (resultSet.next()) {
+
+                User user = getUserFromResultSet(resultSet);
+
+                users.add(user);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_USERS);
+        }
+        return users;
+    }
+
+    @Override
+    public int countUsersByRoleId(int id) throws SQLException {
+
+        return USER_DAO.countUsersByRoleId(UserRole.PATIENT.getId());
+
+    }
+
 }

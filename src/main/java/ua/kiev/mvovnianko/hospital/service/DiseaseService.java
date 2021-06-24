@@ -16,4 +16,8 @@ public interface DiseaseService {
     Disease getDiseaseById(int diseaseId) throws SQLException;
 
     List<Disease> getAllDiseases(String sortBy) throws SQLException;
+
+    List<Disease> getDiseasesPage(String sortBy, int doctorId, int startRow, int amount) throws SQLException;
+
+    int countDiseasesByDoctorId(int doctorId) throws SQLException;
 }

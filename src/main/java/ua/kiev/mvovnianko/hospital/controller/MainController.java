@@ -46,8 +46,6 @@ public class MainController extends HttpServlet {
         if (forward != null) {
             RequestDispatcher dispatcher = request.getRequestDispatcher(forward);
 
-            //response.sendRedirect(forward);
-
             dispatcher.forward(request, response);
         }
     }

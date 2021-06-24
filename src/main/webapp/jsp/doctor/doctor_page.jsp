@@ -62,7 +62,7 @@
         <form method="post" action="${pageContext.request.contextPath}/admin/setTreatment">
             <input type="hidden" name="command" value="setTreatment"/>
             <fmt:message key="set_treatment" /> <fmt:message key="for_patient" />
-            <input type="text" name="patientLogin" placeholder=<fmt:message key="login" />>
+            <input type="text" name="patientEmail" placeholder=<fmt:message key="login" />>
             <fmt:message key="disease" />
             <input type="text" name="diseaseName" placeholder=<fmt:message key="disease" /> <fmt:message key="name" />>
             <fmt:message key="treatment" />
@@ -80,12 +80,12 @@
         </p>
     </div>
 
-        <%--=====================SET DISEASE FORM======================================--%>
+    <%--=====================SET DISEASE FORM======================================--%>
     <div class="body_section">
         <p>
         <form method="post" action="${pageContext.request.contextPath}/admin/setDisease">
             <input type="hidden" name="command" value="setDisease"/>
-        <fmt:message key="set" /> <fmt:message key="disease" />
+            <fmt:message key="set" /> <fmt:message key="disease" />
             <input type="text" name="diseaseName" placeholder= <fmt:message key="disease" /> <fmt:message key="name" />>
             <fmt:message key="for_patient" />
             <input type="text" name="patientLogin" placeholder=<fmt:message key="login" />>
@@ -93,7 +93,7 @@
         </form>
         </p>
     </div>
-        <%--=====================DO TREATMENT FORM======================================--%>
+    <%--=====================DO TREATMENT FORM======================================--%>
     <div class="body_section">
         <p>
         <form method="post" action="${pageContext.request.contextPath}/admin/doTreatment">
@@ -157,7 +157,7 @@
         </p>
         <%--=====================TREATMENTS LIST PAGES INFO======================================--%>
         <c:if test="${treatmentsCurrentPage != null}">
-            <h4>страница ${treatmentsCurrentPage} из ${treatmentsNoOfPages}</h4>
+            <h4><fmt:message key="page"/> ${treatmentsCurrentPage} <fmt:message key="from"/> ${treatmentsNoOfPages}</h4>
         </c:if>
         <%--=====================TREATMENTS LIST previous BUTTON======================================--%>
         <c:if test="${treatmentsCurrentPage != 1 && treatmentsCurrentPage != null}">
@@ -184,22 +184,30 @@
     </div>
 </div>
 
+<%--=========================================================================================--%>
+<%--===============================PATIENTS LIST PART======================================--%>
+<%--=========================================================================================--%>
 <div class="split_screen">
     <div class="simple_body_section">
         <p>
-        <h3><fmt:message key="my.patients"/>  <fmt:message key="sorted.by"/> ${patientsSortBy} </h3>
+            <%--=====================PATIENTS LIST HEADER======================================--%>
+        <h3><fmt:message key="patients.list"/></h3>
+        <c:if test="${patientsSortParameter != null}">
+            <h4><fmt:message key="sort.type"/>: ${patientsSortParameter}</h4>
+        </c:if>
+        <%--=====================PATIENTS SORT FORM======================================--%>
         <form method="post" action="${pageContext.request.contextPath}/admin/sortUsers">
             <input type="hidden" name="command" value="getMyPatients"/>
 
-            <label for="patientsSortBy"><fmt:message key="sort_by" /></label>
-            <select name="patientsSortBy" id="patientsSortBy">
+            <label for="patientsSortParameter"><fmt:message key="sort_by" /></label>
+            <select name="patientsSortParameter" id="patientsSortParameter">
                 <option value="full_name"><fmt:message key="alphabetic" /></option>
                 <option value="birth_date"><fmt:message key="birth_date" /></option>
             </select>
             <input class="button" type="submit" value=<fmt:message key="sort" />>
         </form>
         </p>
-
+        <%--=====================PATIENTS LIST TABLE======================================--%>
         <p>
         <table class="table" cellspacing="2" border="1" cellpadding="5" width="600">
             <thead>
@@ -218,27 +226,59 @@
                 <td>${item.birthDate}</td>
                 </c:forEach>
         </table>
-
         </p>
+        <%--=====================PATIENTS LIST PAGES INFO======================================--%>
+        <c:if test="${patientsCurrentPage != null}">
+            <h4><fmt:message key="page"/> ${patientsCurrentPage} <fmt:message key="from"/> ${patientsNoOfPages}</h4>
+        </c:if>
+        <%--=====================PATIENTS LIST previous BUTTON======================================--%>
+        <c:if test="${patientsCurrentPage != 1 && patientsCurrentPage != null}">
+
+            <form method="post" action="${pageContext.request.contextPath}/admin/sortTreatments">
+                <input type="hidden" name="command" value="getMyPatients"/>
+                <input type="hidden" name="patientsSortParameter" value="${patientsPageSortBy}"/>
+                <input type="hidden" name="patientsCurrentPage" value="${patientsCurrentPage-1}"/>
+                <input class="button" type="submit" value=<fmt:message key="previous"/>>
+            </form>
+
+        </c:if>
+        <%--=====================PATIENTS LIST next BUTTON======================================--%>
+        <c:if test="${patientsCurrentPage != null && patientsCurrentPage < patientsNoOfPages}">
+
+            <form method="post" action="${pageContext.request.contextPath}/admin/sortTreatments">
+                <input type="hidden" name="command" value="getMyPatients"/>
+                <input type="hidden" name="patientsSortParameter" value="${patientsPageSortBy}"/>
+                <input type="hidden" name="patientsCurrentPage" value="${patientsCurrentPage+1}"/>
+                <input class="button" type="submit" value=<fmt:message key="next"/>>
+            </form>
+
+        </c:if>
     </div>
 </div>
-
+<%--=========================================================================================--%>
+<%--===============================DISEASES LIST PART======================================--%>
+<%--=========================================================================================--%>
 <div class="split_screen">
     <div class="simple_body_section">
         <p>
-        <h3><fmt:message key="my.patients.diseases"/>  <fmt:message key="sorted.by"/> ${diseasesSortBy} </h3>
+            <%--=====================DISEASES LIST HEADER======================================--%>
+        <h3><fmt:message key="diseases.list"/></h3>
+        <c:if test="${diseasesSortParameter != null}">
+            <h4><fmt:message key="sort.type"/>: ${diseasesSortParameter}</h4>
+        </c:if>
+        <%--=====================DISEASES SORT FORM======================================--%>
         <form method="post" action="${pageContext.request.contextPath}/admin/sortDiseases">
             <input type="hidden" name="command" value="getMyPatientsDiseases"/>
 
-            <label for="diseasesSortBy"><fmt:message key="sort_by" /></label>
-            <select name="diseasesSortBy" id="diseasesSortBy">
+            <label for="diseasesSortParameter"><fmt:message key="sort_by" /></label>
+            <select name="diseasesSortParameter" id="diseasesSortParameter">
                 <option value="full_name"><fmt:message key="patient" /></option>
                 <option value="name"><fmt:message key="disease" /></option>
             </select>
             <input class="button" type="submit" value=<fmt:message key="sort" />>
         </form>
         </p>
-
+        <%--=====================DISEASES LIST TABLE======================================--%>
         <p>
         <table class="table" cellspacing="2" border="1" cellpadding="5" width="600">
             <thead>
@@ -258,7 +298,32 @@
                 </c:forEach>
         </table>
         </p>
+        <%--=====================DISEASES LIST PAGES INFO======================================--%>
+        <c:if test="${diseasesCurrentPage != null}">
+            <h4><fmt:message key="page" /> ${diseasesCurrentPage} <fmt:message key="from" /> ${diseasesNoOfPages}</h4>
+        </c:if>
+        <%--=====================DISEASES LIST previous BUTTON======================================--%>
+        <c:if test="${diseasesCurrentPage != 1 && diseasesCurrentPage != null}">
 
+            <form method="post" action="${pageContext.request.contextPath}/admin/sortTreatments">
+                <input type="hidden" name="command" value="getMyPatientsDiseases"/>
+                <input type="hidden" name="diseasesSortParameter" value="${diseasesPageSortBy}"/>
+                <input type="hidden" name="diseasesCurrentPage" value="${diseasesCurrentPage-1}"/>
+                <input class="button" type="submit" value=<fmt:message key="previous"/>>
+            </form>
+
+        </c:if>
+        <%--=====================DISEASES LIST next BUTTON======================================--%>
+        <c:if test="${diseasesCurrentPage != null && diseasesCurrentPage < diseasesNoOfPages}">
+
+            <form method="post" action="${pageContext.request.contextPath}/admin/sortTreatments">
+                <input type="hidden" name="command" value="getMyPatientsDiseases"/>
+                <input type="hidden" name="diseasesSortParameter" value="${diseasesPageSortBy}"/>
+                <input type="hidden" name="diseasesCurrentPage" value="${diseasesCurrentPage+1}"/>
+                <input class="button" type="submit" value=<fmt:message key="next"/>>
+            </form>
+
+        </c:if>
     </div>
 </div>
 

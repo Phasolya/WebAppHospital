@@ -8,15 +8,43 @@ import java.util.ResourceBundle;
  */
 public class UtilConstants {
 
+    public static final int FIRST_PAGE = 1;
+    public static final int RECORDS_PER_PAGE = 5;
+
     public static final String LANGUAGE = "language";
     public static final String TREATMENT_ID = "treatmentId";
     public static final String MESSAGE = "message";
+    public static final String ALL = "all";
     public static final String PAGE = "page";
+    public static final String PATIENTS = "patients";
+
+    public static final String DOCTORS_CURRENT_PAGE = "doctorsCurrentPage";
+    public static final String DISEASES_CURRENT_PAGE = "diseasesCurrentPage";
+    public static final String DISEASES_NUMBER_OF_PAGES = "diseasesNoOfPages";
     public static final String TREATMENTS_CURRENT_PAGE = "treatmentsCurrentPage";
+    public static final String TREATMENTS_NO_OF_PAGES = "treatmentsNoOfPages";
+    public static final String JSP_TREATMENTS = "treatments";
+
+    public static final String PATIENTS_CURRENT_PAGE = "patientsCurrentPage";
+    public static final String PATIENTS_NUMBER_OF_PAGES = "patientsNoOfPages";
+
     public static final String EMAIL = "email";
+    public static final String FULL_NAME = "full_name";
     public static final String PASSWORD = "password";
+    public static final String BIRTH_DATE = "birthDate";
+    public static final String DOCTOR_TYPE = "doctorType";
+
     public static final String TREATMENTS_SORT_PARAMETER = "treatmentsSortParameter";
+    public static final String DOCTORS_SORT_PARAMETER = "doctorsSortParameter";
+    public static final String JSP_DOCTORS = "doctors";
+    public static final String JSP_DOCTORS_NO_OF_PAGES = "doctorsNoOfPages";
+    public static final String JSP_DOCTOR_TYPE = "doctorType";
+
+    public static final String JSP_DISEASES = "diseases";
+    public static final String DISEASES_SORT_PARAMETER = "diseasesSortParameter";
+    public static final String PATIENTS_SORT_PARAMETER = "patientsSortParameter";
     public static final String USER = "user";
+    public static final String DELETED = "deleted";
     public static final String USER_ROLE = "userRole";
 
 //    public static final String PAGE = "page";
@@ -51,7 +79,7 @@ public class UtilConstants {
     public static final String CANT_FIND_DISEASE = "cant.find.disease";
 
 
-    public static final String WELCOME = "we.glad.to.see.you.dear";
+    public static final String WELCOME = "you.login.as";
     public static final String ADMIN = "admin";
     public static final String DOCTOR = "doctor";
     public static final String NURSE = "nurse";
@@ -89,6 +117,13 @@ public class UtilConstants {
     public static final String COULD_NOT_LOAD_DOCTORS = "could.not.load.doctors.from.db";
 
     public static final String COULD_NOT_LOAD_USERS = "could.not.load.users.from.db";
+    public static final String JSP_DOCTOR_EMAIL = "doctorEmail";
+    public static final String JSP_PATIENT_EMAIL = "patientEmail";
+    public static final String JSP_DISEASE_NAME = "diseaseName";
+    public static final String JSP_TREATMENT_NAME = "treatmentName";
+    public static final String JSP_TREATMENT_TYPE_NAME = "treatmentTypeName";
+
+
 
     //==================================================================================================================
     //================================================command url patterns==============================================
@@ -107,6 +142,16 @@ public class UtilConstants {
     //db constants:
     public static final String MYSQL_DATA_BASE = "MySQL";
     public static final String MYSQL_COUNT = "count";
+    public static final String MYSQL_USER_BIRT_DATE = "birth_date";
+    public static final String MYSQL_USER_FULL_NAME = "full_name";
+    public static final String MYSQL_DOCTOR_TYPE = "doctor_type";
+    public static final String MYSQL_PATIENTS_AMOUNT = "patients_amount";
+
+    public static final String MYSQL_NAME = "name";
+    public static final String MYSQL_DISEASE_NAME = "disease_name";
+    public static final String MYSQL_PATIENTS_LOGIN = "patients_login";
+    public static final String MYSQL_TREATMENT_TYPE_NAME = "treatment_type_name";
+
 
     public static final String CONTENT_TYPE = "application/json";
     public static final String ENCODING = "UTF-8";
@@ -124,8 +169,13 @@ public class UtilConstants {
     public static final String SQL_GET_TYPE_ID_BY_NAME = "SELECT id FROM `mydb`.`doctor_type` WHERE name=(?);";
     public static final String SQL_ADD_TYPE_ID_BY_NAME = "INSERT INTO `mydb`.`doctor_type` (`name`) VALUES (?);";
     public static final String SQL_SET_TYPE_FOR_DOCTOR = "INSERT INTO `mydb`.`doctor_has_type` (`doctor_id`, `doctor_type_id`) VALUES (?, ?);";
-
-
+    public static final String SQL_COUNT_PATIENTS_BY_DOCTOR_ID = "SELECT COUNT(patient_id) AS count FROM `mydb`.`doctor_has_patient` " +
+            "WHERE doctor_id = ?;";
+    public static final String SQL_COUNT_DISEASES_BY_DOCTOR_ID =
+            "SELECT COUNT(d.id) AS count FROM disease AS d, doctor_has_patient AS dhp, `mydb`.`user` AS u " +
+                    "where dhp.doctor_id = ? AND u.id = patient_id AND d.user_id = u.id;";
+    public static final String SQL__COUNT_USERS_BY_ID = "SELECT COUNT(*) AS count FROM mydb.user AS U " +
+            "WHERE u.role_id = ?;";
     public static final String SQL_TABLE_TREATMENT = "`mydb`.`treatment`";
     // for String#format() use!
     public static final String SQL__COUNT_ROWS = "SELECT COUNT(*) AS count FROM %s;";
@@ -133,6 +183,14 @@ public class UtilConstants {
     public static final String SQL__FIND_AND_SORT_PATIENTS_BY_DOCTOR_ID = "SELECT u.* FROM user AS u, doctor_has_patient AS dhp " +
             "where u.id = patient_id and doctor_id = ? " +
             "ORDER BY %s;";
+    public static final String SQL__PAGE_OF_SORTED_PATIENTS_BY_DOCTOR_ID = "SELECT u.* FROM user AS u, doctor_has_patient AS dhp " +
+            "where u.id = patient_id and doctor_id = ? " +
+            "ORDER BY %s " +
+            "LIMIT ?, ?;";
+    public static final String SQL__PAGE_OF_SORTED_USERS_BY_ROLE_ID = "SELECT u.* FROM user AS u " +
+            "WHERE u.role_id = ? " +
+            "ORDER BY %s " +
+            "LIMIT ?, ?;";
     public static final String SQL__FIND_AND_SORT_DOCTORS_BY_TYPE =
             "SELECT u.*, dt.name as doctor_type, count(dhp.patient_id) AS patients_amount " +
                     "FROM user AS u" +
@@ -142,6 +200,16 @@ public class UtilConstants {
                     "WHERE dt.name = '%s' " +
                     "GROUP BY u.id " +
                     "ORDER BY %s;";
+    public static final String SQL__FIND_AND_SORT_DOCTORS_BY_TYPE_PAGE =
+            "SELECT u.*, dt.name as doctor_type, count(dhp.patient_id) AS patients_amount " +
+                    "FROM user AS u" +
+                    "INNER JOIN doctor_has_type AS dht ON u.id = dht.doctor_id " +
+                    "INNER JOIN doctor_type AS dt ON dht.doctor_type_id = dt.id " +
+                    "LEFT JOIN doctor_has_patient AS dhp ON dhp.doctor_id = u.id " +
+                    "WHERE dt.name = '%s' " +
+                    "GROUP BY u.id " +
+                    "ORDER BY %s " +
+                    "LIMIT ?, ?;";
     public static final String SQL__FIND_AND_SORT_ALL_DOCTORS =
             "SELECT u.*, dt.name as doctor_type, count(dhp.patient_id) AS patients_amount " +
                     "FROM user AS u " +
@@ -150,7 +218,15 @@ public class UtilConstants {
                     "LEFT JOIN doctor_has_patient AS dhp ON dhp.doctor_id = u.id " +
                     "GROUP BY u.id " +
                     "ORDER BY %s";
-
+    public static final String SQL__FIND_AND_SORT_ALL_DOCTORS_PAGE =
+            "SELECT u.*, dt.name as doctor_type, count(dhp.patient_id) AS patients_amount " +
+                    "FROM user AS u " +
+                    "INNER JOIN doctor_has_type AS dht ON u.id = dht.doctor_id " +
+                    "INNER JOIN doctor_type AS dt ON dht.doctor_type_id = dt.id " +
+                    "LEFT JOIN doctor_has_patient AS dhp ON dhp.doctor_id = u.id " +
+                    "GROUP BY u.id " +
+                    "ORDER BY %s " +
+                    "LIMIT ?, ?;";
 
     //==================================================================================================================
     //===================================================== SQL Treatment ==============================================
@@ -186,6 +262,17 @@ public class UtilConstants {
             "FROM mydb.disease AS d " +
             "INNER JOIN mydb.user AS u ON d.user_id =u.id " +
             "ORDER BY %s;";
+    public static final String SQL_GET_SORTED_DISEASES_BY_DOCTOR_ID =
+            "SELECT d.id, d.name, u.email AS email, u.full_name AS full_name " +
+                    "FROM mydb.disease AS d " +
+                    "INNER JOIN mydb.user AS u ON d.user_id =u.id " +
+                    "WHERE d.id IN " +
+                    "(SELECT DISTINCT d.id " +
+                    "FROM mydb.disease AS d, mydb.doctor_has_patient AS dhp, mydb.user AS u " +
+                    "WHERE dhp.doctor_id = ? AND d.user_id = dhp.patient_id) " +
+                    "ORDER BY %s " +
+                    "LIMIT ?, ?;";
+
 
     //==================================================================================================================
     //===================================================== SQL Disease ==============================================

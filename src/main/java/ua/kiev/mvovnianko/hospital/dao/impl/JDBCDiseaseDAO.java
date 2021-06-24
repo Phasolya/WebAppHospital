@@ -75,4 +75,23 @@ public class JDBCDiseaseDAO implements DiseaseDAO {
         return statement.executeQuery();
 
     }
+
+    @Override
+    public ResultSet getDiseasesPage(PreparedStatement statement, int doctorId, int startRow, int amount) throws SQLException {
+
+        statement.setInt(1, doctorId);
+        statement.setInt(2, startRow);
+        statement.setInt(3, amount);
+
+        return statement.executeQuery();
+
+    }
+
+    @Override
+    public ResultSet countDiseasesByDoctorId(PreparedStatement statement, int doctorId) throws SQLException {
+
+        statement.setInt(1, doctorId);
+
+        return statement.executeQuery();
+    }
 }

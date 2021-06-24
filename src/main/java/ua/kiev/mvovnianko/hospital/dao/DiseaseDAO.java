@@ -35,4 +35,8 @@ public interface DiseaseDAO {
     ResultSet getDiseaseById(PreparedStatement statement, int diseaseId) throws SQLException;
 
     ResultSet getDiseases(PreparedStatement statement) throws SQLException;
+
+    ResultSet getDiseasesPage(PreparedStatement statement, int doctorId, int startRow, int amount) throws SQLException;
+
+    ResultSet countDiseasesByDoctorId(PreparedStatement statement, int doctorId) throws SQLException;
 }

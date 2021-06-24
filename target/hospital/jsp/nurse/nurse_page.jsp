@@ -119,7 +119,7 @@
 
         <%--=====================TREATMENTS LIST PAGES INFO======================================--%>
         <c:if test="${currentPage != null}">
-            <h4>страница ${currentPage} из ${noOfPages}</h4>
+            <h4><fmt:message key="page" /> ${currentPage} <fmt:message key="from" /> ${noOfPages}</h4>
         </c:if>
 
         <%--=====================TREATMENTS LIST previous BUTTON======================================--%>
