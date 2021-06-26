@@ -37,7 +37,7 @@ public class UserRegistrationCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         HttpSession session = request.getSession();
 
@@ -79,7 +79,7 @@ public class UserRegistrationCommand implements Command {
 
         String email = request.getParameter(EMAIL);
         String password = request.getParameter(PASSWORD);
-        String fullName = request.getParameter(FULL_NAME);
+        String fullName = request.getParameter(JSP_FULL_NAME );
         String birthDate = request.getParameter(BIRTH_DATE);
         String userRoleStr = request.getParameter(USER_ROLE);
         String doctorTypeStr = request.getParameter(DOCTOR_TYPE);

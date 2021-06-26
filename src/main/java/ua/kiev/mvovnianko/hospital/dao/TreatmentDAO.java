@@ -49,4 +49,8 @@ public interface TreatmentDAO{
     int countTreatments() throws SQLException;
 
     ResultSet getTreatmentsPage(PreparedStatement statement, int startRow, int amount) throws SQLException;
+    ResultSet getTreatmentsPageByPatientId(PreparedStatement statement, int patientId, int startRow, int amount) throws SQLException;
+
+    ResultSet countTreatmentsByPatient(PreparedStatement statement, int patientId) throws SQLException;
+
 }

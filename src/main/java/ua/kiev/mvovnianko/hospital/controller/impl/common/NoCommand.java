@@ -24,14 +24,10 @@ public class NoCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        LOGGER.debug("Command noCommand starts");
-
         final String LANG = getLang(request);
 
         String message = localize(WRONG_COMMAND, LANG);
         request.setAttribute(MESSAGE, message);
-
-        LOGGER.debug("Command noCommand finish");
 
         return ERROR_PAGE;
     }

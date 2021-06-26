@@ -147,7 +147,7 @@
         </p>
         <%--=====================DOCTORS LIST PAGES INFO======================================--%>
         <c:if test="${doctorsCurrentPage != null}">
-            <h4>страница ${doctorsCurrentPage} из ${doctorsCurrentPage}</h4>
+            <h4><fmt:message key="page"/> ${doctorsCurrentPage} <fmt:message key="from"/> ${doctorsCurrentPage}</h4>
         </c:if>
         <%--=====================DOCTORS LIST previous BUTTON======================================--%>
         <c:if test="${doctorsCurrentPage != 1 && doctorsCurrentPage != null}">
@@ -220,7 +220,7 @@
         </p>
         <%--=====================PATIENTS LIST PAGES INFO======================================--%>
         <c:if test="${patientsCurrentPage != null}">
-            <h4>страница ${patientsCurrentPage} из ${patientsCurrentPage}</h4>
+            <h4><fmt:message key="page"/> ${patientsCurrentPage} <fmt:message key="from"/> ${patientsCurrentPage}</h4>
         </c:if>
         <%--=====================PATIENTS LIST previous BUTTON======================================--%>
         <c:if test="${patientsCurrentPage != 1 && patientsCurrentPage != null}">

@@ -36,6 +36,25 @@ public class JDBCTreatmentDAO implements TreatmentDAO, CommonsOperable {
     }
 
     @Override
+    public ResultSet getTreatmentsPageByPatientId(PreparedStatement statement, int patientId, int startRow, int amount) throws SQLException{
+
+        statement.setInt(1, patientId);
+        statement.setInt(2, startRow);
+        statement.setInt(3, amount);
+
+        return statement.executeQuery();
+
+    }
+
+    @Override
+    public ResultSet countTreatmentsByPatient(PreparedStatement statement, int patientId) throws SQLException {
+
+            statement.setInt(1, patientId);
+
+            return statement.executeQuery();
+        }
+
+    @Override
     public void createNewTreatment(Treatment treatment) throws SQLException {
 
         try (Connection connection = MySQLConnectorManager.getConnection();

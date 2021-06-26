@@ -8,6 +8,9 @@ import ua.kiev.mvovnianko.hospital.controller.impl.doctor.*;
 import ua.kiev.mvovnianko.hospital.controller.impl.guest.LoginCommand;
 import ua.kiev.mvovnianko.hospital.controller.impl.nurse.NurseDoTreatmentCommand;
 import ua.kiev.mvovnianko.hospital.controller.impl.nurse.NurseGetTreatmentsCommand;
+import ua.kiev.mvovnianko.hospital.controller.impl.patient.GetMyDoctorsCommand;
+import ua.kiev.mvovnianko.hospital.controller.impl.patient.PatientGetDiseaseCommand;
+import ua.kiev.mvovnianko.hospital.controller.impl.patient.PatientGetTreatmentsCommand;
 import ua.kiev.mvovnianko.hospital.dao.DiseaseDAO;
 import ua.kiev.mvovnianko.hospital.dao.TreatmentDAO;
 import ua.kiev.mvovnianko.hospital.dao.UserDAO;
@@ -62,6 +65,13 @@ public class UtilData {
 
         COMMANDS_MAP.put("getNurseTreatments", new NurseGetTreatmentsCommand(treatmentService));
         COMMANDS_MAP.put("doNurseTreatment", new NurseDoTreatmentCommand(treatmentService));
+
+        COMMANDS_MAP.put("getMyDoctors", new GetMyDoctorsCommand(userService));
+        COMMANDS_MAP.put("getPatientTreatments", new PatientGetTreatmentsCommand(treatmentService));
+        COMMANDS_MAP.put("getMyDiseases", new PatientGetDiseaseCommand(diseaseService));
+
+
+
     }
 
 }

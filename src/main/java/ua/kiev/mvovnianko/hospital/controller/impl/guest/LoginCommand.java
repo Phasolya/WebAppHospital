@@ -35,7 +35,7 @@ public class LoginCommand implements Command {
 
         LOGGER.debug("Command LoginCommand starts");
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         HttpSession session = request.getSession();
 

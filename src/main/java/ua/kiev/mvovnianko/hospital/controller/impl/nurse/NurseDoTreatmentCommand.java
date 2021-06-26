@@ -36,7 +36,7 @@ public class NurseDoTreatmentCommand implements Command {
 
         LOGGER.debug("Command NurseDoTreatment starts");
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         String message = TREATMENT_DELETED;
 

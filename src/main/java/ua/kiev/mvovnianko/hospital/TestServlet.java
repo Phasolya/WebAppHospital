@@ -38,7 +38,7 @@ public class TestServlet extends HttpServlet {
         UserService userService = new MySQLUserService(new JDBCUserDAO());
         List<User> patients = null;
         try {
-            patients = userService.getSortedUsersByRoleId(3, "birth_date");
+            patients = userService.getUsersByRoleId(3, "birth_date");
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }

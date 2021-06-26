@@ -155,7 +155,7 @@ public class MySQLTreatmentService implements TreatmentService {
         Treatment treatment = null;
 
         try (Connection connection = MySQLConnectorManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_GET_TREATMENT_BY_ID)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_GET_TREATMENT_BY_ID_FULL)) {
 
             MySQLConnectorManager.startTransaction(connection);
 
@@ -234,10 +234,73 @@ public class MySQLTreatmentService implements TreatmentService {
     }
 
     @Override
+    public List<Treatment> getTreatmentsPageByPatientId(String sortBy,int patientId, int startRow, int amount) throws SQLException{
+
+        String sqlRequest = String.format(SQL_GET_TREATMENTS_BY_PATIENT_ID, sortBy);
+
+        List<Treatment> treatments = new ArrayList<>();
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = TREATMENT_DAO.getTreatmentsPageByPatientId(statement, patientId, startRow, amount);
+
+            while (resultSet.next()) {
+
+                Treatment treatment = getTreatmentFromResultSet(resultSet);
+
+                treatments.add(treatment);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_TREATMENTS);
+        }
+        return treatments;
+    }
+
+
+    @Override
     public int countTreatments() throws SQLException {
 
         return TREATMENT_DAO.countTreatments();
 
+    }
+
+    @Override
+    public int countTreatmentsByPatientId(int patientId) throws SQLException{
+
+        int count = 0;
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_TREATMENTS_BY_PATIENT_ID)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = TREATMENT_DAO.countTreatmentsByPatient(statement, patientId);
+
+            if (resultSet.next()) {
+
+                count = resultSet.getInt(MYSQL_COUNT);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_TREATMENTS);
+        }
+        return count;
     }
 
     private List<Treatment> getTreatmentsFromResultSet(ResultSet resultSet) throws SQLException {

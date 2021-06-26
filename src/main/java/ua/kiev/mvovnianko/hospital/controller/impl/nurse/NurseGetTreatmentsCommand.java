@@ -35,7 +35,7 @@ public class NurseGetTreatmentsCommand implements Command {
 
         LOGGER.debug("Command GetMyTreatments starts");
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         int page = FIRST_PAGE;
         int recordsPerPage = RECORDS_PER_PAGE;

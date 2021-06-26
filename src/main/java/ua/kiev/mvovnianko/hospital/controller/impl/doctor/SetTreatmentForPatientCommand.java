@@ -47,7 +47,7 @@ public class SetTreatmentForPatientCommand implements Command {
 
         LOGGER.debug("Command SetTreatmentForPatient starts");
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         String message = localize(OPERATION_SUCCESS, lang);
 

@@ -43,7 +43,7 @@ public class SetDiseaseToPatientCommand implements Command {
 
         LOGGER.debug("Command SetDiseaseToPatient starts");
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         String message = localize(OPERATION_SUCCESS, lang);
         String patientLogin = request.getParameter( JSP_PATIENT_EMAIL);

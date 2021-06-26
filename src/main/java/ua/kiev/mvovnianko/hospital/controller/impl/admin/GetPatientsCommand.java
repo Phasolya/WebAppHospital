@@ -33,7 +33,7 @@ public class GetPatientsCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         int page = FIRST_PAGE;
         int recordsPerPage = RECORDS_PER_PAGE;
@@ -62,7 +62,7 @@ public class GetPatientsCommand implements Command {
 
         try {
 
-            patients = SERVICE.getSortedUsersPageByRoleId(UserRole.PATIENT.getId(), sortBy, (page - 1) * recordsPerPage, recordsPerPage);
+            patients = SERVICE.getUsersPageByRoleId(UserRole.PATIENT.getId(), sortBy, (page - 1) * recordsPerPage, recordsPerPage);
             LOGGER.info("patients page reads from db");
             int noOfRecords = SERVICE.countUsersByRoleId(UserRole.PATIENT.getId());
             LOGGER.info("get from db patients amount");

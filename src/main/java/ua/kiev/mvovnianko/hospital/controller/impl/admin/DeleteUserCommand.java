@@ -32,7 +32,7 @@ public class DeleteUserCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         String email = request.getParameter(EMAIL);
 

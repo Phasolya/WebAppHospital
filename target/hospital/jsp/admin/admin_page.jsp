@@ -66,9 +66,9 @@
         <form method="post" action="${pageContext.request.contextPath}/admin/Doc-Patient">
             <input type="hidden" name="command" value="docForPatient"/>
             <fmt:message key="set_doctor"/>
-            <input type="text" name="doctorLogin" placeholder=<fmt:message key="login"/>>
+            <input type="text" name="doctorEmail" placeholder=<fmt:message key="login"/>>
             <fmt:message key="for_patient"/>
-            <input type="text" name="patientLogin" placeholder=<fmt:message key="login"/>>
+            <input type="text" name="patientEmail" placeholder=<fmt:message key="login"/>>
             <input class="button" type="submit" value=<fmt:message key="set"/>>
         </form>
         </p>
@@ -79,7 +79,7 @@
         <form method="post" action="${pageContext.request.contextPath}/admin/deleteUser">
             <input type="hidden" name="command" value="deleteUser"/>
             <fmt:message key="delete_user"/>
-            <input type="text" name="userEmail" placeholder=<fmt:message key="login"/>>
+            <input type="text" name="email" placeholder=<fmt:message key="login"/>>
             <input class="button" type="submit" value=<fmt:message key="delete"/>>
         </form>
         </p>
@@ -147,7 +147,7 @@
         </p>
         <%--=====================DOCTORS LIST PAGES INFO======================================--%>
         <c:if test="${doctorsCurrentPage != null}">
-            <h4>страница ${doctorsCurrentPage} из ${doctorsCurrentPage}</h4>
+            <h4><fmt:message key="page"/> ${doctorsCurrentPage} <fmt:message key="from"/> ${doctorsCurrentPage}</h4>
         </c:if>
         <%--=====================DOCTORS LIST previous BUTTON======================================--%>
         <c:if test="${doctorsCurrentPage != 1 && doctorsCurrentPage != null}">
@@ -220,7 +220,7 @@
         </p>
         <%--=====================PATIENTS LIST PAGES INFO======================================--%>
         <c:if test="${patientsCurrentPage != null}">
-            <h4>страница ${patientsCurrentPage} из ${patientsCurrentPage}</h4>
+            <h4><fmt:message key="page"/> ${patientsCurrentPage} <fmt:message key="from"/> ${patientsCurrentPage}</h4>
         </c:if>
         <%--=====================PATIENTS LIST previous BUTTON======================================--%>
         <c:if test="${patientsCurrentPage != 1 && patientsCurrentPage != null}">

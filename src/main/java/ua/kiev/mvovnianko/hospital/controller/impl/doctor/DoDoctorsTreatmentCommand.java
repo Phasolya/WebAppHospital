@@ -34,9 +34,9 @@ public class DoDoctorsTreatmentCommand implements Command {
 
         LOGGER.debug("Command DoDoctorsTreatment starts");
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
-        String message = TREATMENT_DELETED;
+        String message = localize(TREATMENT_DELETED, lang);;
 
         int treatmentId;
 

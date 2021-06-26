@@ -35,7 +35,7 @@ public interface UserService {
      * @param sortParameter   the {@code String} parameter specifies order.
      * @return {@code List<User>} list of Users in specified order.
      */
-    List<User> getSortedUsersByRoleId(int roleId, String sortParameter) throws SQLException;
+    List<User> getUsersByRoleId(int roleId, String sortParameter) throws SQLException;
 
     /**
      * Responsible for getting the list of all Doctors by Doctor's type
@@ -45,7 +45,7 @@ public interface UserService {
      * @param sortParameter   the {@code String} parameter specifies order.
      * @return {@code List<Doctor>} list of Doctors in specified order.
      */
-    List<EntityDoctor> getSortedDoctors(String doctorType, String sortParameter) throws SQLException;
+    List<EntityDoctor> getEntityDoctors(String doctorType, String sortParameter) throws SQLException;
 
     User getUserById(int id);
 
@@ -57,17 +57,19 @@ public interface UserService {
 
     void setDoctorType(int doctorId, String doctorType) throws SQLException;
 
-    List<User> getSortedPatientsByDoctorId(int DoctorId, String sortBy) throws SQLException;
-
     int countPatientsByDoctorId(int DoctorId) throws SQLException;
 
     List<User> getPatientsPageByDoctorId(int id, String sortBy, int i, int recordsPerPage);
+    List<User> getPatientsByDoctorId(int DoctorId, String sortBy) throws SQLException;
 
     List<EntityDoctor> getDoctorsPage(String doctorType, String sortParameter, int startRow, int amount) throws SQLException;
+    List<EntityDoctor> getDoctorsPageByPatientId(int patientId, String sortParameter, int startRow, int amount) throws SQLException;
 
-    int countDoctors() throws SQLException;
-
-    List<User> getSortedUsersPageByRoleId(int roleId, String sortParameter, int startRow, int amount) throws SQLException;
+    List<User> getUsersPageByRoleId(int roleId, String sortParameter, int startRow, int amount) throws SQLException;
 
     int countUsersByRoleId(int id) throws SQLException;
+    int countDoctors() throws SQLException;
+
+    int countDoctorsByPatientId(int patientId) throws SQLException;
+
 }

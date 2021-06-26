@@ -65,6 +65,8 @@ public interface UserDAO {
     ResultSet getPatients(PreparedStatement statement, int doctorId, int startRow, int amount) throws SQLException;
 
     ResultSet getEntityDoctorsPage(PreparedStatement statement, int startRow, int amount) throws SQLException;
+    ResultSet getEntityDoctorsPageByPatientId(PreparedStatement statement, int patientId, int startRow, int amount) throws SQLException;
 
     int countUsersByRoleId(int id) throws SQLException;
+
 }

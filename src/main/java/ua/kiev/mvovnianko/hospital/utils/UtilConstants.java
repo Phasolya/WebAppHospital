@@ -30,6 +30,8 @@ public class UtilConstants {
 
     public static final String EMAIL = "email";
     public static final String FULL_NAME = "full_name";
+    public static final String JSP_FULL_NAME = "fullName";
+
     public static final String PASSWORD = "password";
     public static final String BIRTH_DATE = "birthDate";
     public static final String DOCTOR_TYPE = "doctorType";
@@ -174,6 +176,9 @@ public class UtilConstants {
     public static final String SQL_COUNT_DISEASES_BY_DOCTOR_ID =
             "SELECT COUNT(d.id) AS count FROM disease AS d, doctor_has_patient AS dhp, `mydb`.`user` AS u " +
                     "where dhp.doctor_id = ? AND u.id = patient_id AND d.user_id = u.id;";
+    public static final String SQL_COUNT_DISEASES_BY_PATIENT_ID =
+            "SELECT COUNT(d.id) AS count FROM disease AS d " +
+                    "WHERE d.user_id = ?;";
     public static final String SQL__COUNT_USERS_BY_ID = "SELECT COUNT(*) AS count FROM mydb.user AS U " +
             "WHERE u.role_id = ?;";
     public static final String SQL_TABLE_TREATMENT = "`mydb`.`treatment`";
@@ -191,6 +196,18 @@ public class UtilConstants {
             "WHERE u.role_id = ? " +
             "ORDER BY %s " +
             "LIMIT ?, ?;";
+    public static final String SQL__COUNT_DOCTORS_BY_PATIENT_ID =
+            "SELECT COUNT(dhp.doctor_id) AS count " +
+                    "FROM doctor_has_patient AS dhp " +
+                    "WHERE dhp.patient_id = ?;";
+    public static final String SQL_COUNT_TREATMENTS_BY_PATIENT_ID =
+            "SELECT COUNT(t.id) AS count " +
+                    "FROM treatment AS t " +
+                    "INNER JOIN treatment_type AS tt ON t.treatment_type_id = tt.id " +
+                    "INNER JOIN disease AS d ON d.id = t.disease_id " +
+                    "INNER JOIN user AS u ON u.id = d.user_id " +
+                    "WHERE u.id = ?;";
+
     public static final String SQL__FIND_AND_SORT_DOCTORS_BY_TYPE =
             "SELECT u.*, dt.name as doctor_type, count(dhp.patient_id) AS patients_amount " +
                     "FROM user AS u" +
@@ -227,6 +244,16 @@ public class UtilConstants {
                     "GROUP BY u.id " +
                     "ORDER BY %s " +
                     "LIMIT ?, ?;";
+    public static final String SQL__DOCTORS_PAGE_BY_PATIENT_ID =
+            "SELECT u.*, dt.name as doctor_type, count(dhp.patient_id) AS patients_amount " +
+                    "FROM user AS u " +
+                    "INNER JOIN doctor_has_type AS dht ON u.id = dht.doctor_id " +
+                    "INNER JOIN doctor_type AS dt ON dht.doctor_type_id = dt.id " +
+                    "LEFT JOIN doctor_has_patient AS dhp ON dhp.doctor_id = u.id " +
+                    "WHERE dhp.patient_id = ? " +
+                    "GROUP BY u.id " +
+                    "ORDER BY %s " +
+                    "LIMIT ?, ?;";
 
     //==================================================================================================================
     //===================================================== SQL Treatment ==============================================
@@ -240,7 +267,21 @@ public class UtilConstants {
                     "INNER JOIN user AS u ON u.id = d.user_id " +
                     "ORDER BY %s " +
                     "LIMIT ?, ?;";
+    public static final String SQL_GET_TREATMENTS_BY_PATIENT_ID =
+            "SELECT t.id, t.name, tt.name AS treatment_type_name, d.name AS disease_name, u.email AS patients_login, u.full_name AS patients_name " +
+                    "FROM treatment AS t " +
+                    "INNER JOIN treatment_type AS tt ON t.treatment_type_id = tt.id " +
+                    "INNER JOIN disease AS d ON d.id = t.disease_id " +
+                    "INNER JOIN user AS u ON u.id = d.user_id " +
+                    "WHERE u.id = ? " +
+                    "ORDER BY %s " +
+                    "LIMIT ?, ?;";
 
+
+    public static final String SQL_COUNT_ROWS_USERS =
+            "SELECT COUNT(id) AS count FROM `mydb`.`user`;";
+    public static final String SQL_COUNT_ROWS_PATIENTS =
+            "SELECT COUNT(id) AS count FROM `mydb`.`user` WHERE role_id = 3;";
     public static final String SQL_ADD_NEW_TREATMENT =
             "INSERT INTO `mydb`.`treatment` (`name`, `disease_id`, `treatment_type_id`) VALUES (?, ?, ?);";
     public static final String SQL_DELETE_TREATMENT_BY_ID =
@@ -249,6 +290,13 @@ public class UtilConstants {
             "SELECT * FROM `mydb`.`treatment` WHERE disease_id = (?);";
     public static final String SQL_GET_TREATMENT_BY_ID =
             "SELECT * FROM `mydb`.`treatment` WHERE id = (?);";
+    public static final String SQL_GET_TREATMENT_BY_ID_FULL =
+            "SELECT t.id, t.name, tt.name AS treatment_type_name, d.name AS disease_name, u.email AS patients_login, u.full_name AS patients_name " +
+                    "FROM treatment AS t " +
+                    "INNER JOIN treatment_type AS tt ON t.treatment_type_id = tt.id " +
+                    "INNER JOIN disease AS d ON d.id = t.disease_id " +
+                    "INNER JOIN user AS u ON u.id = d.user_id " +
+                    "WHERE t.id = ?;";
     public static final String SQL_GET_TREATMENTS_BY_TREATMENT_TYPE_ID =
             "SELECT * FROM `mydb`.`treatment` WHERE treatment_type_id = (?);";
     public static final String SQL_GET_SORTED_TREATMENTS =
@@ -272,13 +320,25 @@ public class UtilConstants {
                     "WHERE dhp.doctor_id = ? AND d.user_id = dhp.patient_id) " +
                     "ORDER BY %s " +
                     "LIMIT ?, ?;";
-
+    public static final String SQL_GET_SORTED_DISEASES_BY_PATIENT_ID =
+            "SELECT d.id, d.name, u.email AS email, u.full_name AS full_name " +
+                    "FROM mydb.disease AS d " +
+                    "INNER JOIN mydb.user AS u ON d.user_id =u.id " +
+                    "WHERE d.user_id = ? " +
+                    "ORDER BY %s " +
+                    "LIMIT ?, ?;";
 
     //==================================================================================================================
     //===================================================== SQL Disease ==============================================
     //==================================================================================================================
     public static final String SQL_ADD_NEW_DISEASE = "INSERT INTO `mydb`.`disease` (`name`, `user_id`) VALUES (?, ?);";
+
     public static final String SQL_GET_DISEASE_BY_USER_ID = "SELECT * FROM `mydb`.`disease` WHERE user_id = (?);";
+    public static final String SQL_GET_DISEASE_BY_USER_ID_PARTLY =
+            "SELECT d.id, d.name, u.email AS email, u.full_name AS full_name " +
+            "FROM mydb.disease AS d " +
+            "INNER JOIN mydb.user AS u ON d.user_id = u.id " +
+            "WHERE u.id = ?;";
     public static final String SQL_GET_DISEASE_BY_ID = "SELECT * FROM `mydb`.`disease` WHERE id = (?);";
     public static final String SQL_DELETE_DISEASE_BY_ID = "DELETE FROM `mydb`.`disease` WHERE id=(?);";
 

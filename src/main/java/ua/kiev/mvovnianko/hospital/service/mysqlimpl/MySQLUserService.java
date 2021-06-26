@@ -105,7 +105,7 @@ public class MySQLUserService implements UserService {
      * @return {@code List<User>} list of Users in specified order.
      */
     @Override
-    public List<User> getSortedUsersByRoleId(int roleId, String sortParameter) throws SQLException {
+    public List<User> getUsersByRoleId(int roleId, String sortParameter) throws SQLException {
         List<User> users = new ArrayList<>();
         // sortParameter === birth_date OR full_name
         String sqlRequest = String.format(SQL__FIND_AND_SORT_USERS, sortParameter);
@@ -146,7 +146,7 @@ public class MySQLUserService implements UserService {
      * @return {@code List<Doctor>} list of Doctors in specified order.
      */
     @Override
-    public List<EntityDoctor> getSortedDoctors(String doctorType, String sortParameter) throws SQLException {
+    public List<EntityDoctor> getEntityDoctors(String doctorType, String sortParameter) throws SQLException {
         List<EntityDoctor> doctors = new ArrayList<>();
         // sortParameter === full_name OR doctor_type OR patients_amount
         String sqlRequest = String.format(SQL__FIND_AND_SORT_ALL_DOCTORS, sortParameter);
@@ -366,7 +366,7 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public List<User> getSortedPatientsByDoctorId(int doctorId, String sortBy) throws SQLException {
+    public List<User> getPatientsByDoctorId(int doctorId, String sortBy) throws SQLException {
 
         List<User> users = new ArrayList<>();
         // sortParameter === birth_date OR full_name
@@ -432,6 +432,38 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
+    public List<EntityDoctor> getDoctorsPageByPatientId(int patientId, String sortParameter, int startRow, int amount) throws SQLException{
+        List<EntityDoctor> doctors = new ArrayList<>();
+        // sortParameter === full_name OR doctor_type
+        String sqlRequest = String.format(SQL__DOCTORS_PAGE_BY_PATIENT_ID, sortParameter);
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.getEntityDoctorsPageByPatientId(statement,patientId, startRow, amount);
+
+            while (resultSet.next()) {
+
+                EntityDoctor doctor = getDoctorFromResultSet(resultSet);
+
+                doctors.add(doctor);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_DOCTORS);
+        }
+        return doctors;
+    }
+
+    @Override
     public List<EntityDoctor> getDoctorsPage(String doctorType, String sortParameter, int startRow, int amount) throws SQLException {
 
         List<EntityDoctor> doctors = new ArrayList<>();
@@ -476,7 +508,7 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public List<User> getSortedUsersPageByRoleId(int roleId, String sortParameter, int startRow, int amount) throws SQLException {
+    public List<User> getUsersPageByRoleId(int roleId, String sortParameter, int startRow, int amount) throws SQLException {
 
         List<User> users = new ArrayList<>();
 
@@ -513,6 +545,35 @@ public class MySQLUserService implements UserService {
 
         return USER_DAO.countUsersByRoleId(UserRole.PATIENT.getId());
 
+    }
+
+    @Override
+    public int countDoctorsByPatientId(int patientId) throws SQLException{
+
+        int count = 0;
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL__COUNT_DOCTORS_BY_PATIENT_ID)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = USER_DAO.countPatientsByDoctorId(statement, patientId);
+
+            if (resultSet.next()) {
+
+                count = resultSet.getInt(MYSQL_COUNT);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_USERS);
+        }
+        return count;
     }
 
 }

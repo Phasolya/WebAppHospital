@@ -118,28 +118,28 @@
         </table>
 
         <%--=====================TREATMENTS LIST PAGES INFO======================================--%>
-        <c:if test="${currentPage != null}">
-            <h4><fmt:message key="page" /> ${currentPage} <fmt:message key="from" /> ${noOfPages}</h4>
+        <c:if test="${treatmentsCurrentPage != null}">
+            <h4><fmt:message key="page" /> ${treatmentsCurrentPage} <fmt:message key="from" /> ${treatmentsNoOfPages}</h4>
         </c:if>
 
         <%--=====================TREATMENTS LIST previous BUTTON======================================--%>
-        <c:if test="${currentPage != 1 && currentPage != null}">
+        <c:if test="${treatmentsCurrentPage != 1 && treatmentsCurrentPage != null}">
 
             <form method="post" action="${pageContext.request.contextPath}/admin/sortTreatments">
                 <input type="hidden" name="command" value="getNurseTreatments"/>
-                <input type="hidden" name="treatmentsSortParameter" value="${pageSortBy}"/>
-                <input type="hidden" name="page" value="${currentPage-1}"/>
+                <input type="hidden" name="treatmentsSortParameter" value="${treatmentsPageSortBy}"/>
+                <input type="hidden" name="page" value="${treatmentsCurrentPage-1}"/>
                 <input class="button" type="submit" value=<fmt:message key="previous"/>>
             </form>
 
         </c:if>
         <%--=====================TREATMENTS LIST next BUTTON======================================--%>
-        <c:if test="${currentPage != null && currentPage < noOfPages}">
+        <c:if test="${treatmentsCurrentPage != null && treatmentsCurrentPage < treatmentsNoOfPages}">
 
             <form method="post" action="${pageContext.request.contextPath}/admin/sortTreatments">
                 <input type="hidden" name="command" value="getNurseTreatments"/>
-                <input type="hidden" name="treatmentsSortParameter" value="${pageSortBy}"/>
-                <input type="hidden" name="page" value="${currentPage+1}"/>
+                <input type="hidden" name="treatmentsSortParameter" value="${treatmentsPageSortBy}"/>
+                <input type="hidden" name="page" value="${treatmentsCurrentPage+1}"/>
                 <input class="button" type="submit" value=<fmt:message key="next"/>>
             </form>
 

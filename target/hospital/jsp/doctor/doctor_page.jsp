@@ -62,7 +62,7 @@
         <form method="post" action="${pageContext.request.contextPath}/admin/setTreatment">
             <input type="hidden" name="command" value="setTreatment"/>
             <fmt:message key="set_treatment" /> <fmt:message key="for_patient" />
-            <input type="text" name="patientLogin" placeholder=<fmt:message key="login" />>
+            <input type="text" name="patientEmail" placeholder=<fmt:message key="login" />>
             <fmt:message key="disease" />
             <input type="text" name="diseaseName" placeholder=<fmt:message key="disease" /> <fmt:message key="name" />>
             <fmt:message key="treatment" />
@@ -88,7 +88,7 @@
             <fmt:message key="set" /> <fmt:message key="disease" />
             <input type="text" name="diseaseName" placeholder= <fmt:message key="disease" /> <fmt:message key="name" />>
             <fmt:message key="for_patient" />
-            <input type="text" name="patientLogin" placeholder=<fmt:message key="login" />>
+            <input type="text" name="patientEmail" placeholder=<fmt:message key="login" />>
             <input class="button" type="submit" value=<fmt:message key="set" />>
         </form>
         </p>

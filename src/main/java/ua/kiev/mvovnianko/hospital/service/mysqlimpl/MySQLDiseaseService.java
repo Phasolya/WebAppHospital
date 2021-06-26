@@ -52,7 +52,7 @@ public class MySQLDiseaseService implements DiseaseService {
         List<Disease> diseases = new ArrayList<>();
 
         try (Connection connection = MySQLConnectorManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_GET_DISEASE_BY_USER_ID)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_GET_DISEASE_BY_USER_ID_PARTLY)) {
 
             MySQLConnectorManager.startTransaction(connection);
 
@@ -169,6 +169,39 @@ public class MySQLDiseaseService implements DiseaseService {
     }
 
     @Override
+    public List<Disease> getDiseasesPageByPatientId(String sortBy, int patientId, int startRow, int amount) throws SQLException {
+
+        List<Disease> diseases = new ArrayList<>();
+
+        String sqlRequest = String.format(SQL_GET_SORTED_DISEASES_BY_PATIENT_ID, sortBy);
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = DISEASE_DAO.getDiseasesPage(statement, patientId, startRow, amount);
+
+            while (resultSet.next()) {
+
+                Disease disease = getDiseaseFromResultSet(resultSet);
+
+                diseases.add(disease);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_DISEASE);
+        }
+        return diseases;
+    }
+
+    @Override
     public int countDiseasesByDoctorId(int doctorId) throws SQLException {
 
         int count = 0;
@@ -197,6 +230,35 @@ public class MySQLDiseaseService implements DiseaseService {
         return count;
     }
 
+    @Override
+    public int countDiseasesByPatientId(int patientId) throws SQLException {
+
+        int count = 0;
+
+        try (Connection connection = MySQLConnectorManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_DISEASES_BY_PATIENT_ID)) {
+
+            MySQLConnectorManager.startTransaction(connection);
+
+            ResultSet resultSet = DISEASE_DAO.countDiseasesByDoctorId(statement, patientId);
+
+            if (resultSet.next()) {
+
+                count = resultSet.getInt(MYSQL_COUNT);
+
+            }
+
+            MySQLConnectorManager.commitTransaction(connection);
+
+            resultSet.close();
+
+        } catch (SQLException e) {
+
+            LOGGER.error(COULD_NOT_LOAD_DISEASE);
+        }
+        return count;
+    }
+
     private Disease getDiseaseFromResultSet(ResultSet resultSet) throws SQLException {
 
         //User user = USER_SERVICE.getUserById(resultSet.getInt("user_id"));
@@ -205,6 +267,17 @@ public class MySQLDiseaseService implements DiseaseService {
                 .buildFullName(resultSet.getString("full_name"))
                 .buildEmail(resultSet.getString("email"))
                 .build();
+
+        return new DiseaseBuilder()
+                .buildId(resultSet.getInt("id"))
+                .buildName(resultSet.getString("name"))
+                .buildUser(user)
+                .build();
+    }
+
+    private Disease getFullDiseaseFromResultSet(ResultSet resultSet) throws SQLException {
+
+        User user = USER_SERVICE.getUserById(resultSet.getInt("user_id"));
 
         return new DiseaseBuilder()
                 .buildId(resultSet.getInt("id"))

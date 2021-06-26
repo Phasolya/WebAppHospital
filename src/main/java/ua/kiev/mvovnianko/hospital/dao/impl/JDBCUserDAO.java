@@ -207,6 +207,16 @@ public class JDBCUserDAO implements UserDAO, CommonsOperable {
     }
 
     @Override
+    public ResultSet getEntityDoctorsPageByPatientId(PreparedStatement statement, int patientId, int startRow, int amount) throws SQLException{
+
+        statement.setInt(1, patientId);
+        statement.setInt(2, startRow);
+        statement.setInt(3, amount);
+
+        return statement.executeQuery();
+    }
+
+    @Override
     public int countUsersByRoleId(int id) throws SQLException {
 
         int rowsCount;

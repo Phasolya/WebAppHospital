@@ -32,7 +32,7 @@ public class GetDoctorsCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         int page = FIRST_PAGE;
         int recordsPerPage = RECORDS_PER_PAGE;

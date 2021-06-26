@@ -11,12 +11,6 @@ public interface TreatmentService {
 
     void deleteTreatmentById(int treatmentId) throws SQLException;
 
-    List<Treatment> getTreatmentsByDiseaseId( int diseaseId) throws SQLException;
-
-    List<Treatment> getTreatmentsByTreatmentTypeId( int treatmentTypeId) throws SQLException;
-
-    List<Treatment> getSortedTreatments(String sortBy) throws SQLException;
-
     Treatment getTreatmentById(int treatmentId)throws SQLException;
 
     /**
@@ -30,5 +24,17 @@ public interface TreatmentService {
      */
     List<Treatment> getTreatmentsPage(String sortBy, int startRow, int amount) throws SQLException;
 
+    List<Treatment> getTreatmentsPageByPatientId(String sortBy,int patientId, int startRow, int amount) throws SQLException;
+
     int countTreatments() throws SQLException;
+
+    int countTreatmentsByPatientId(int patientId) throws SQLException;
+
+    List<Treatment> getTreatmentsByDiseaseId( int diseaseId) throws SQLException;
+
+    List<Treatment> getTreatmentsByTreatmentTypeId( int treatmentTypeId) throws SQLException;
+
+    List<Treatment> getSortedTreatments(String sortBy) throws SQLException;
+
+
 }

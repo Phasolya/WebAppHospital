@@ -33,7 +33,7 @@ public class DocForPatientCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        final String lang = getLang(request);
+        String lang = getLang(request);
 
         String doctorEmail = request.getParameter(JSP_DOCTOR_EMAIL);
         String patientEmail = request.getParameter(JSP_PATIENT_EMAIL);
