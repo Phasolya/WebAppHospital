@@ -1,7 +1,6 @@
 package ua.kiev.mvovnianko.hospital.service.mysqlimpl;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ua.kiev.mvovnianko.hospital.dao.impl.JDBCUserDAO;
 import ua.kiev.mvovnianko.hospital.dbConnector.MySQLConnectorManager;
@@ -68,7 +67,6 @@ public class MySQLUserServiceTest  {
             e.printStackTrace();
         }
     }
-
 
     //==================================================================================================================
     //==============================================PRIVATE METHODS=====================================================

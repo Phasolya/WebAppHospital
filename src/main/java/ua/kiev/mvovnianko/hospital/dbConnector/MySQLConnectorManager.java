@@ -21,7 +21,7 @@ public class MySQLConnectorManager {
     static {
         PoolProperties p = new PoolProperties();
         p.setUrl("jdbc:mysql://localhost:3306/mydb?serverTimezone=UTC");
-        p.setDriverClassName("com.mysql.jdbc.Driver");
+        p.setDriverClassName("com.mysql.cj.jdbc.Driver");
         p.setUsername("root");
         p.setPassword("root");
         p.setTestWhileIdle(false);
